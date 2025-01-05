@@ -34,9 +34,63 @@ class CustomerServiceApplicationTests {
     @Test
     public void buyAndSell() {
         // buy
-        var buyRequest = new StockTradeRequest(Ticker.YANDEX, 100, 5, TradeAction.BUY);
-        trade(2, buyRequest, HttpStatus.OK)
-                .jsonPath("$.balance").isEqualTo(9500);
+        var buyRequest1 = new StockTradeRequest(Ticker.YANDEX, 100, 5, TradeAction.BUY);
+        trade(2, buyRequest1, HttpStatus.OK)
+                .jsonPath("$.balance").isEqualTo(9500)
+                .jsonPath("$.totalPrice").isEqualTo(500);
+
+        var buyRequest2 = new StockTradeRequest(Ticker.YANDEX, 100, 10, TradeAction.BUY);
+        trade(2, buyRequest2, HttpStatus.OK)
+                .jsonPath("$.balance").isEqualTo(8500)
+                .jsonPath("$.totalPrice").isEqualTo(1000);
+
+        // check the holdings
+        getCustomer(2, HttpStatus.OK)
+                .jsonPath("$.holdings").isNotEmpty()
+                .jsonPath("$.holdings.length()").isEqualTo(1)
+                .jsonPath("$.holdings[0].ticker").isEqualTo("YANDEX")
+                .jsonPath("$.holdings[0].quantity").isEqualTo(15);
+
+        // sell
+        var sellRequest1 = new StockTradeRequest(Ticker.YANDEX, 110, 5, TradeAction.SELL);
+        trade(2, sellRequest1, HttpStatus.OK)
+                .jsonPath("$.balance").isEqualTo(9050)
+                .jsonPath("$.totalPrice").isEqualTo(550);
+        var sellRequest2 = new StockTradeRequest(Ticker.YANDEX, 110, 10, TradeAction.SELL);
+        trade(2, sellRequest2, HttpStatus.OK)
+                .jsonPath("$.balance").isEqualTo(10150)
+                .jsonPath("$.totalPrice").isEqualTo(1100);
+
+        // check the holdings
+        getCustomer(2, HttpStatus.OK)
+                .jsonPath("$.holdings").isNotEmpty()
+                .jsonPath("$.holdings.length()").isEqualTo(1)
+                .jsonPath("$.holdings[0].ticker").isEqualTo("YANDEX")
+                .jsonPath("$.holdings[0].quantity").isEqualTo(0);
+    }
+
+    @Test
+    public void customerNotFound() {
+        getCustomer(10, HttpStatus.NOT_FOUND)
+                .jsonPath("$.detail").isEqualTo("Customer [id=10] is not found");
+
+        var sellRequest = new StockTradeRequest(Ticker.YANDEX, 110, 5, TradeAction.SELL);
+        trade(10, sellRequest, HttpStatus.NOT_FOUND)
+                .jsonPath("$.detail").isEqualTo("Customer [id=10] is not found");
+    }
+
+    @Test
+    public void insufficientBalance() {
+        var buyRequest = new StockTradeRequest(Ticker.YANDEX, 100, 101, TradeAction.BUY);
+        trade(3, buyRequest, HttpStatus.BAD_REQUEST)
+                .jsonPath("$.detail").isEqualTo("Customer [id=3] does not have enough funds to complete the transaction");
+    }
+
+    @Test
+    public void insufficientShares() {
+        var sellRequest = new StockTradeRequest(Ticker.YANDEX, 100, 1, TradeAction.SELL);
+        trade(3, sellRequest, HttpStatus.BAD_REQUEST)
+                .jsonPath("$.detail").isEqualTo("Customer [id=3] does not have enough shares to complete the transaction");
     }
 
     private WebTestClient.BodyContentSpec getCustomer(Integer customerId, HttpStatus expectStatus) {

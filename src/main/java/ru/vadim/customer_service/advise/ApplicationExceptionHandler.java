@@ -25,7 +25,7 @@ public class ApplicationExceptionHandler {
 
     @ExceptionHandler(InsufficientBalanceException.class)
     public ProblemDetail handleException(InsufficientBalanceException ex) {
-        return build(HttpStatus.NOT_FOUND, ex, problem -> {
+        return build(HttpStatus.BAD_REQUEST, ex, problem -> {
             problem.setType(URI.create("http://example.com/problems/insufficient-balance"));
             problem.setTitle("Insufficient Balance");
         });
@@ -33,7 +33,7 @@ public class ApplicationExceptionHandler {
 
     @ExceptionHandler(InsufficientShareException.class)
     public ProblemDetail handleException(InsufficientShareException ex) {
-        return build(HttpStatus.NOT_FOUND, ex, problem -> {
+        return build(HttpStatus.BAD_REQUEST, ex, problem -> {
             problem.setType(URI.create("http://example.com/problems/insufficient-shares"));
             problem.setTitle("Insufficient Shares");
         });
