@@ -1,16 +1,8 @@
 package ru.vadim.customer_service.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import ru.vadim.customer_service.domain.Ticker;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
 public class PortfolioItem {
 
     @Id
@@ -18,4 +10,36 @@ public class PortfolioItem {
     private Integer customerId;
     private Ticker ticker;
     private Integer quantity;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Integer customerId) {
+        this.customerId = customerId;
+    }
+
+    public Ticker getTicker() {
+        return ticker;
+    }
+
+    public void setTicker(Ticker ticker) {
+        this.ticker = ticker;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
 }

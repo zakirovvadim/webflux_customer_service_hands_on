@@ -1,6 +1,5 @@
 package ru.vadim.customer_service.services;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
@@ -14,11 +13,15 @@ import ru.vadim.customer_service.repository.CustomerRepository;
 import ru.vadim.customer_service.repository.PortfolioItemRepository;
 
 @Service
-@RequiredArgsConstructor
 public class TradeService {
 
     private final CustomerRepository customerRepository;
     private final PortfolioItemRepository portfolioItemRepository;
+
+    public TradeService(CustomerRepository customerRepository, PortfolioItemRepository portfolioItemRepository) {
+        this.customerRepository = customerRepository;
+        this.portfolioItemRepository = portfolioItemRepository;
+    }
 
     @Transactional
     public Mono<StockTradeResponse> trade(Integer customerId, StockTradeRequest request) {

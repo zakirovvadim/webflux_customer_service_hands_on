@@ -1,6 +1,5 @@
 package ru.vadim.customer_service.services;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import ru.vadim.customer_service.dto.CustomerInformation;
@@ -11,10 +10,15 @@ import ru.vadim.customer_service.repository.CustomerRepository;
 import ru.vadim.customer_service.repository.PortfolioItemRepository;
 
 @Service
-@RequiredArgsConstructor
 public class CustomerService {
+
     private final CustomerRepository customerRepository;
     private final PortfolioItemRepository portfolioItemRepository;
+
+    public CustomerService(CustomerRepository customerRepository, PortfolioItemRepository portfolioItemRepository) {
+        this.customerRepository = customerRepository;
+        this.portfolioItemRepository = portfolioItemRepository;
+    }
 
     public Mono<CustomerInformation> getCustomerInformation(Integer customerId) {
         return this.customerRepository.findById(customerId)
